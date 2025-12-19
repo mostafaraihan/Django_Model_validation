@@ -1,20 +1,16 @@
-from django.db import models
-from django.core.validators import (
-    EmailValidator,
-    MinValueValidator,
-    MaxValueValidator,
-    MinLengthValidator,
-)
 from django.core.exceptions import ValidationError
+from django.db import models
 
 
 class MyModel(models.Model):
     name = models.CharField(max_length=100, blank=False, null=False)
     age = models.IntegerField(blank=False, null=False)
     email = models.EmailField(unique=True, blank=False, null=False)
-    phone = models.IntegerField(blank=False, null=False)
-    salary = models.DecimalField(max_digits=10, decimal_places=2, blank=False, null=False)
+    phone = models.CharField(blank=False, null=False)
+    salary = models.DecimalField(max_digits=15, decimal_places=2, blank=False, null=False)
 
+
+    #build in properties
     def clean(self):
         errors = {}
 
@@ -41,6 +37,24 @@ class MyModel(models.Model):
             MaxValueValidator(400000, message="Salary cannot be greater than 400000")(self.salary)
         except ValidationError as e:
             errors['salary'] = e.messages
+
+        if errors:
+            raise ValidationError(errors)
+
+
+
+    #Custom Validation
+    def clean(self):
+        super().clean()
+        errors = {}
+
+        # Salary validation
+        if self.salary < 10000:
+            errors['salary'] = 'Salary must be greater than 10000'
+
+        # Phone validation (integer-safe check)
+        if not self.phone.isdigit():
+            errors['phone'] = 'Phone number must contain only digits'
 
         if errors:
             raise ValidationError(errors)
