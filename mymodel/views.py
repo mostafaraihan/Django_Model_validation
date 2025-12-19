@@ -2,15 +2,6 @@ import json
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from .models import MyModel
-from  django.core.validators import(
-    ValidationError,
-    EmailValidator,
-    URLValidator,
-    RegexValidator,
-    MinValueValidator,
-    MaxValueValidator,
-    MinLengthValidator,
-)
 
 @csrf_exempt
 def index(request):
