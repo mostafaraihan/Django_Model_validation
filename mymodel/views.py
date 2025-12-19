@@ -8,16 +8,21 @@ def index(request):
     if request.method == 'POST':
         try:
             data = json.loads(request.body)
-        except json.JSONDecodeError:
-            return JsonResponse({'error': 'Invalid JSON'}, status=400)
 
-        MyModel.objects.create(
-            name=data.get('name'),
-            age=data.get('age'),
-            email=data.get('email'),
-            phone=data.get('phone'),
-            salary=data.get('salary'),
-        )
+            # create instance (do NOT save yet)
+            result = MyModel(
+                name=data.get('name'),
+                age=data.get('age'),
+                email=data.get('email'),
+                phone=data.get('phone'),
+                salary=data.get('salary'),
+            )
+
+            result.full_clean()
+            result.save()
+
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
 
         return JsonResponse({'message': 'successfully added'}, status=201)
 
